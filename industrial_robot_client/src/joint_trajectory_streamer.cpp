@@ -99,7 +99,7 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   }
 
   // calc new trajectory
-  std::vector<JointTrajPtMessage> new_traj_msgs;
+  std::vector<JointTrajPtFullMessage> new_traj_msgs;
   if (!trajectory_to_msgs(msg, &new_traj_msgs))
     return;
 
@@ -107,7 +107,7 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   send_to_robot(new_traj_msgs);
 }
 
-bool JointTrajectoryStreamer::send_to_robot(const std::vector<JointTrajPtMessage>& messages)
+bool JointTrajectoryStreamer::send_to_robot(const std::vector<JointTrajPtFullMessage>& messages)
 {
   ROS_INFO("Loading trajectory, setting state to streaming");
   this->mutex_.lock();
@@ -123,7 +123,7 @@ bool JointTrajectoryStreamer::send_to_robot(const std::vector<JointTrajPtMessage
   return true;
 }
 
-bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<JointTrajPtMessage>* msgs)
+bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<JointTrajPtFullMessage>* msgs)
 {
   // use base function to transform points
   if (!JointTrajectoryInterface::trajectory_to_msgs(traj, msgs))
@@ -143,7 +143,7 @@ bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTra
 
 void JointTrajectoryStreamer::streamingThread()
 {
-  JointTrajPtMessage jtpMsg;
+  JointTrajPtFullMessage jtpMsg;
   int connectRetryCount = 1;
 
   ROS_INFO("Starting joint trajectory streamer thread");

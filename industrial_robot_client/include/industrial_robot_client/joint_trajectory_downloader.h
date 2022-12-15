@@ -40,7 +40,7 @@ namespace joint_trajectory_downloader
 {
 
 using industrial_robot_client::joint_trajectory_interface::JointTrajectoryInterface;
-using industrial::joint_traj_pt_message::JointTrajPtMessage;
+using industrial::joint_traj_pt_full_message::JointTrajPtFullMessage;
 
 /**
  * \brief Message handler that downloads joint trajectories to
@@ -51,7 +51,7 @@ class JointTrajectoryDownloader : public JointTrajectoryInterface
 
 public:
 
-  bool send_to_robot(const std::vector<JointTrajPtMessage>& messages);
+  bool send_to_robot(const std::vector<JointTrajPtFullMessage>& messages);
 
 };
 

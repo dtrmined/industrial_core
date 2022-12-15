@@ -41,7 +41,7 @@ namespace joint_trajectory_streamer
 {
 
 using industrial_robot_client::joint_trajectory_interface::JointTrajectoryInterface;
-using industrial::joint_traj_pt_message::JointTrajPtMessage;
+using industrial::joint_traj_pt_full_message::JointTrajPtFullMessage;
 using industrial::smpl_msg_connection::SmplMsgConnection;
 
 namespace TransferStates
@@ -106,11 +106,11 @@ public:
 
   virtual void jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
 
-  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<JointTrajPtMessage>* msgs);
+  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<JointTrajPtFullMessage>* msgs);
 
   void streamingThread();
 
-  bool send_to_robot(const std::vector<JointTrajPtMessage>& messages);
+  bool send_to_robot(const std::vector<JointTrajPtFullMessage>& messages);
 
 protected:
 
@@ -119,7 +119,7 @@ protected:
   boost::thread* streaming_thread_;
   boost::mutex mutex_;
   int current_point_;
-  std::vector<JointTrajPtMessage> current_traj_;
+  std::vector<JointTrajPtFullMessage> current_traj_;
   TransferState state_;
   ros::Time streaming_start_;
   int min_buffer_size_;

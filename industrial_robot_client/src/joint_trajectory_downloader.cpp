@@ -37,17 +37,17 @@ namespace joint_trajectory_downloader
 {
 
 using industrial::simple_message::SimpleMessage;
-namespace SpecialSeqValues = industrial::joint_traj_pt::SpecialSeqValues;
+namespace SpecialSeqValues = industrial::joint_traj_pt_full::SpecialSeqValues;
 
-bool JointTrajectoryDownloader::send_to_robot(const std::vector<JointTrajPtMessage>& messages)
+bool JointTrajectoryDownloader::send_to_robot(const std::vector<JointTrajPtFullMessage>& messages)
 {
   bool rslt=true;
-  std::vector<JointTrajPtMessage> points(messages);
+  std::vector<JointTrajPtFullMessage> points(messages);
   SimpleMessage msg;
 
   // Trajectory download requires at least two points (START/END)
   if (points.size() < 2)
-    points.push_back(JointTrajPtMessage(points[0]));
+    points.push_back(JointTrajPtFullMessage(points[0]));
 
   // The first and last points are assigned special sequence values
   points.begin()->setSequence(SpecialSeqValues::START_TRAJECTORY_DOWNLOAD);

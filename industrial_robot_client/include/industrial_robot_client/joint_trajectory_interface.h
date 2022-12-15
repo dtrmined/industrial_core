@@ -42,7 +42,7 @@
 #include "sensor_msgs/JointState.h"
 #include "simple_message/smpl_msg_connection.h"
 #include "simple_message/socket/tcp_client.h"
-#include "simple_message/messages/joint_traj_pt_message.h"
+#include "simple_message/messages/joint_traj_pt_full_message.h"
 #include "trajectory_msgs/JointTrajectory.h"
 
 namespace industrial_robot_client
@@ -52,7 +52,7 @@ namespace joint_trajectory_interface
 
   using industrial::smpl_msg_connection::SmplMsgConnection;
   using industrial::tcp_client::TcpClient;
-  using industrial::joint_traj_pt_message::JointTrajPtMessage;
+  using industrial::joint_traj_pt_full_message::JointTrajPtFullMessage;
   namespace StandardSocketPorts = industrial::simple_socket::StandardSocketPorts;
 
 /**
@@ -123,15 +123,15 @@ protected:
   virtual void trajectoryStop();
 
   /**
-   * \brief Convert ROS trajectory message into stream of JointTrajPtMessages for sending to robot.
+   * \brief Convert ROS trajectory message into stream of JointTrajPtFullMessages for sending to robot.
    *   Also includes various joint transforms that can be overridden for robot-specific behavior.
    *
    * \param[in] traj ROS JointTrajectory message
-   * \param[out] msgs list of JointTrajPtMessages for sending to robot
+   * \param[out] msgs list of JointTrajPtFullMessages for sending to robot
    *
    * \return true on success, false otherwise
    */
-  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<JointTrajPtMessage>* msgs);
+  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<JointTrajPtFullMessage>* msgs);
 
   /**
    * \brief Transform joint positions before publishing.
@@ -172,7 +172,7 @@ protected:
    *
    * \return true on success, false otherwise
    */
-  virtual bool calc_speed(const trajectory_msgs::JointTrajectoryPoint& pt, double* rbt_velocity, double* rbt_duration);
+  virtual bool calc_speed(const trajectory_msgs::JointTrajectoryPoint& pt, std::vector<double>* rbt_velocity, double* rbt_duration);
 
   /**
    * \brief Reduce the ROS velocity commands (per-joint velocities) to a single scalar for communication to the robot.
@@ -183,7 +183,7 @@ protected:
    *
    * \return true on success, false otherwise
    */
-  virtual bool calc_velocity(const trajectory_msgs::JointTrajectoryPoint& pt, double* rbt_velocity);
+  virtual bool calc_velocity(const trajectory_msgs::JointTrajectoryPoint& pt, std::vector<double>* rbt_velocity);
 
   /**
    * \brief Compute the expected move duration for communication to the robot.
@@ -200,11 +200,11 @@ protected:
    * \brief Send trajectory to robot, using this node's robot-connection.
    *   Specific method must be implemented in a derived class (e.g. streaming, download, etc.)
    *
-   * \param messages List of SimpleMessage JointTrajPtMessages to send to robot.
+   * \param messages List of SimpleMessage JointTrajPtFullMessages to send to robot.
    *
    * \return true on success, false otherwise
    */
-  virtual bool send_to_robot(const std::vector<JointTrajPtMessage>& messages)=0;
+  virtual bool send_to_robot(const std::vector<JointTrajPtFullMessage>& messages)=0;
 
   /**
    * \brief Callback function registered to ROS topic-subscribe.
@@ -257,7 +257,7 @@ protected:
 
 
 private:
-  static JointTrajPtMessage create_message(int seq, std::vector<double> joint_pos, double velocity, double duration);
+  static JointTrajPtFullMessage create_message(int seq, std::vector<double> joint_pos, std::vector<double> velocity, double duration);
 
   /**
    * \brief Callback function registered to ROS CmdJointTrajectory service
